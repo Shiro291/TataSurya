@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { getRandomQuestions } from '../../data/questions';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
     const [questions] = useState(() => getRandomQuestions(5));
@@ -8,6 +9,7 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
     const [answers, setAnswers] = useState(savedAnswers);
     const [showFeedback, setShowFeedback] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
+    const isMobile = useIsMobile();
 
     const question = questions[currentQ];
     const userAnswer = answers[question.id];
@@ -153,9 +155,9 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
                 background: 'rgba(11, 11, 42, 0.6)',
                 backdropFilter: 'blur(20px)',
                 border: '2px solid var(--accent)',
-                padding: '40px',
+                padding: isMobile ? '20px' : '40px',
                 borderRadius: '30px',
-                maxWidth: '700px',
+                maxWidth: isMobile ? '90%' : '700px',
                 margin: '0 auto'
             }}
         >
@@ -184,7 +186,7 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
             </div>
 
             {/* Question */}
-            <h2 style={{ fontSize: '1.4rem', marginBottom: '20px', lineHeight: '1.5' }}>
+            <h2 style={{ fontSize: isMobile ? '1.2rem' : '1.4rem', marginBottom: '20px', lineHeight: '1.5' }}>
                 {question.question}
             </h2>
 
@@ -218,7 +220,7 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
                         background: isCorrect
                             ? 'rgba(102, 187, 106, 0.2)'
                             : 'rgba(244, 67, 54, 0.2)',
-                        border: `2px solid ${isCorrect ? '#66BB6A' : '#F44336'}`,
+                        border: `2px solid ${isCorrect ? '#66BB6A' : '#F44336'} `,
                         marginBottom: '20px'
                     }}
                 >

@@ -70,7 +70,7 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
             {/* Planet Checklist */}
             <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+                gridTemplateColumns: 'repeat(3, 1fr)', // Fixed 3 columns for consistent layout
                 gap: '15px',
                 marginBottom: '30px'
             }}>
