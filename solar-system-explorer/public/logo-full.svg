@@ -1,0 +1,8 @@
+<svg width="600" height="100" viewBox="0 0 600 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Text Only: Angkasa Eksplorer -->
+  <!-- Using consistent font style but larger and centered since no icon -->
+  <text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" font-family="'Orbitron', sans-serif" font-weight="700" font-size="52" fill="white" letter-spacing="2" style="text-shadow: 0 0 15px rgba(79, 76, 176, 0.8);">
+    Angkasa
+    <tspan fill="#42b883">Eksplorer</tspan>
+  </text>
+</svg>

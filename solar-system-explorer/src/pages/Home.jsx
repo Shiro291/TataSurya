@@ -47,6 +47,24 @@ const Home = () => {
                     MULAI MISI 🚀
                 </motion.button>
             </Link>
+
+            {/* Footer Credit */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+                transition={{ delay: 1, duration: 1 }}
+                style={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    fontSize: '0.9rem',
+                    color: 'var(--text-muted)',
+                    letterSpacing: '1px'
+                }}
+            >
+                Made by <strong>Fathan Faqih Ali</strong>
+            </motion.div>
         </div>
     );
 };

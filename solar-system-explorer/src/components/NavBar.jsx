@@ -13,25 +13,22 @@ const NavBar = () => {
 
     return (
         <nav style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            padding: '20px 40px',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            zIndex: 100,
-            background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)'
+            padding: '20px 40px',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            zIndex: 10,
+            boxSizing: 'border-box'
         }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                    width: '40px', height: '40px', background: 'var(--primary)',
-                    borderRadius: '50%', boxShadow: '0 0 15px var(--primary)'
-                }} />
-                <h1 style={{ fontSize: '1.5rem', color: 'white', textShadow: '0 0 10px rgba(0,240,255,0.5)' }}>
-                    Angkasa <span style={{ color: 'var(--primary)' }}>Explorer</span>
-                </h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <Link to="/">
+                    <img src="/logo-full.svg" alt="Angkasa Eksplorer" style={{ height: 'auto', width: '220px', maxWidth: '100%' }} />
+                </Link>
+                {/* Text is now in the SVG logo itself, so we remove the text element */}
             </div>
 
             <div style={{ display: 'flex', gap: '30px' }}>
