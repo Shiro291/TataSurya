@@ -42,7 +42,7 @@ const SolarSystemMap = ({ onPlanetClick, focusedPlanet, isPaused, isFullBright }
                 </React.Suspense>
             </Canvas>
 
-            <div style={{
+            <div className="desktop-only" style={{
                 position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)',
                 pointerEvents: 'none', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem',
                 display: 'flex', alignItems: 'center', gap: '15px'

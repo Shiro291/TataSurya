@@ -83,4 +83,11 @@ button:focus-visible {
   .desktop-only {
     display: none !important;
   }
+
+  /* Touch-friendly tap targets */
+  button,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
 }

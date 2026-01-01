@@ -1,14 +1,16 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 const NavBar = () => {
     const location = useLocation();
+    const isMobile = useIsMobile();
 
     const links = [
-        { path: '/', label: 'Markas (Home)' },
-        { path: '/explore', label: 'Jelajah (Map)' },
-        { path: '/mission', label: 'Misi (Mission)' },
+        { path: '/', label: 'Markas', fullLabel: 'Markas (Home)' },
+        { path: '/explore', label: 'Jelajah', fullLabel: 'Jelajah (Map)' },
+        { path: '/mission', label: 'Misi', fullLabel: 'Misi (Mission)' },
     ];
 
     return (
@@ -16,31 +18,40 @@ const NavBar = () => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '20px 40px',
+            padding: isMobile ? '15px 20px' : '20px 40px',
             position: 'absolute',
             top: 0,
             left: 0,
             width: '100%',
-            zIndex: 10,
-            boxSizing: 'border-box'
+            zIndex: 100,
+            boxSizing: 'border-box',
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)'
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                 <Link to="/">
-                    <img src="/logo-full.svg" alt="Angkasa Eksplorer" style={{ height: 'auto', width: '220px', maxWidth: '100%' }} />
+                    <img
+                        src="/logo-full.svg"
+                        alt="Angkasa Eksplorer"
+                        style={{
+                            height: 'auto',
+                            width: isMobile ? '150px' : '220px',
+                            maxWidth: '100%'
+                        }}
+                    />
                 </Link>
-                {/* Text is now in the SVG logo itself, so we remove the text element */}
             </div>
 
-            <div style={{ display: 'flex', gap: '30px' }}>
+            <div style={{ display: 'flex', gap: isMobile ? '15px' : '30px' }}>
                 {links.map((link) => (
                     <Link key={link.path} to={link.path} style={{ textDecoration: 'none', position: 'relative' }}>
                         <span style={{
                             color: location.pathname === link.path ? 'var(--primary)' : 'var(--text-muted)',
                             fontWeight: '600',
-                            fontSize: '1.1rem',
-                            transition: 'color 0.3s'
+                            fontSize: isMobile ? '0.9rem' : '1.1rem',
+                            transition: 'color 0.3s',
+                            whiteSpace: 'nowrap'
                         }}>
-                            {link.label}
+                            {isMobile ? link.label : link.fullLabel}
                         </span>
                         {location.pathname === link.path && (
                             <motion.div
