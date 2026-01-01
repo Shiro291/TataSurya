@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Certificate = ({ studentName, score, exploredCount, onRestart }) => {
+    const isMobile = useIsMobile();
     const [name, setName] = useState(studentName || '');
     const [showCert, setShowCert] = useState(!!studentName);
 
@@ -27,9 +29,9 @@ const Certificate = ({ studentName, score, exploredCount, onRestart }) => {
                     background: 'rgba(11, 11, 42, 0.6)',
                     backdropFilter: 'blur(20px)',
                     border: '2px solid var(--primary)',
-                    padding: '40px',
+                    padding: isMobile ? '20px' : '40px',
                     borderRadius: '30px',
-                    maxWidth: '500px',
+                    maxWidth: isMobile ? '95%' : '500px',
                     margin: '0 auto',
                     textAlign: 'center'
                 }}
@@ -96,9 +98,9 @@ const Certificate = ({ studentName, score, exploredCount, onRestart }) => {
                 background: 'linear-gradient(135deg, rgba(11, 11, 42, 0.9), rgba(30, 30, 80, 0.9))',
                 backdropFilter: 'blur(20px)',
                 border: '3px solid var(--primary)',
-                padding: '50px',
+                padding: isMobile ? '20px' : '50px',
                 borderRadius: '30px',
-                maxWidth: '700px',
+                maxWidth: isMobile ? '95%' : '700px',
                 margin: '0 auto',
                 textAlign: 'center',
                 boxShadow: '0 0 50px var(--primary)44'

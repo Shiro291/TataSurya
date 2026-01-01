@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const MissionReport = ({ initialDraft = '', onSubmit }) => {
+    const isMobile = useIsMobile();
     const [report, setReport] = useState(initialDraft);
     const wordCount = report.split(/\s+/).filter(w => w).length;
     const minWords = 200;
@@ -23,9 +25,9 @@ const MissionReport = ({ initialDraft = '', onSubmit }) => {
                 background: 'rgba(11, 11, 42, 0.6)',
                 backdropFilter: 'blur(20px)',
                 border: '2px solid #66BB6A',
-                padding: '40px',
+                padding: isMobile ? '15px' : '40px',
                 borderRadius: '30px',
-                maxWidth: '800px',
+                maxWidth: isMobile ? '95%' : '800px',
                 margin: '0 auto'
             }}
         >

@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { planets } from '../../data/planets';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
+    const isMobile = useIsMobile();
     const allPlanets = planets.filter(p => p.type !== 'Star');
     const progress = exploredPlanets.length;
     const total = allPlanets.length;
@@ -16,9 +18,9 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
                 background: 'rgba(11, 11, 42, 0.6)',
                 backdropFilter: 'blur(20px)',
                 border: '2px solid var(--primary)',
-                padding: '40px',
+                padding: isMobile ? '15px' : '40px',
                 borderRadius: '30px',
-                maxWidth: '600px',
+                maxWidth: isMobile ? '95%' : '600px',
                 margin: '0 auto'
             }}
         >
