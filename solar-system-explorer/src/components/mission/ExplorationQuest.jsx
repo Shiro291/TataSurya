@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { planets } from '../data/planets';
+import { planets } from '../../data/planets';
 
 const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
     const allPlanets = planets.filter(p => p.type !== 'Star');
