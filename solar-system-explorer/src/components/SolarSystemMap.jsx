@@ -24,25 +24,20 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-const SolarSystemMap = ({ onPlanetClick, focusedPlanet }) => {
-    const [isPaused, setIsPaused] = useState(false);
-
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.code === 'Space') {
-                setIsPaused(prev => !prev);
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+const SolarSystemMap = ({ onPlanetClick, focusedPlanet, isPaused, isFullBright }) => {
+    // isPaused state moved to parent (Explore.jsx)
 
     return (
         <div style={{ width: '100%', height: '100vh', background: '#050510' }}>
             <Canvas camera={{ position: [0, 800, 1200], fov: 45, far: 20000 }}>
                 <React.Suspense fallback={<Html center><div style={{ color: 'white' }}>Memuat Texture...</div></Html>}>
                     <ErrorBoundary>
-                        <Scene onPlanetClick={onPlanetClick} isPaused={isPaused} focusedPlanet={focusedPlanet} />
+                        <Scene
+                            onPlanetClick={onPlanetClick}
+                            isPaused={isPaused}
+                            focusedPlanet={focusedPlanet}
+                            isFullBright={isFullBright}
+                        />
                     </ErrorBoundary>
                 </React.Suspense>
             </Canvas>
@@ -75,7 +70,7 @@ const SolarSystemMap = ({ onPlanetClick, focusedPlanet }) => {
     );
 };
 
-const Scene = ({ onPlanetClick, isPaused, focusedPlanet }) => {
+const Scene = ({ onPlanetClick, isPaused, focusedPlanet, isFullBright }) => {
     const controlsRef = useRef();
     const planetRefs = useRef({});
 
@@ -134,9 +129,15 @@ const Scene = ({ onPlanetClick, isPaused, focusedPlanet }) => {
 
     return (
         <>
-            {/* Lighting Fix: Low ambient for dark side shadows, strong point for sun */}
-            <ambientLight intensity={0.05} />
-            <pointLight position={[0, 0, 0]} intensity={2.5} color="#FFD700" distance={5000} decay={0.2} />
+            {/* Lighting: Fullbright (Flat) vs Realistic (Direct) */}
+            <ambientLight intensity={isFullBright ? 1.5 : 0.05} />
+            <pointLight
+                position={[0, 0, 0]}
+                intensity={isFullBright ? 0.5 : 2.5}
+                color="#FFD700"
+                distance={5000}
+                decay={0.2}
+            />
 
             <Stars radius={5000} depth={50} count={10000} factor={6} saturation={0.5} fade speed={0.5} />
 

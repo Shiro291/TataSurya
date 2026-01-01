@@ -7,6 +7,19 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Explore = () => {
     const [selectedPlanet, setSelectedPlanet] = useState(null);
     const [viewMode, setViewMode] = useState('map'); // 'map' or 'grid'
+    const [isPaused, setIsPaused] = useState(false);
+    const [isFullBright, setIsFullBright] = useState(false);
+
+    // Global Spacebar Pause Listener
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.code === 'Space') {
+                setIsPaused(prev => !prev);
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, []);
 
     return (
         <div style={{ minHeight: '100vh', position: 'relative' }}>
@@ -17,34 +30,69 @@ const Explore = () => {
                 left: '20px',
                 zIndex: 100,
                 display: 'flex',
-                gap: '10px'
+                flexDirection: 'column',
+                gap: '15px'
             }}>
-                <button
-                    onClick={() => setViewMode('map')}
-                    style={{
-                        padding: '8px 16px',
-                        borderRadius: '20px',
-                        background: viewMode === 'map' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                        color: viewMode === 'map' ? '#000' : '#fff',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Peta Orbit 🌌
-                </button>
-                <button
-                    onClick={() => setViewMode('grid')}
-                    style={{
-                        padding: '8px 16px',
-                        borderRadius: '20px',
-                        background: viewMode === 'grid' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
-                        color: viewMode === 'grid' ? '#000' : '#fff',
-                        border: '1px solid rgba(255,255,255,0.2)',
-                        cursor: 'pointer'
-                    }}
-                >
-                    Kartu 🗂️
-                </button>
+                {/* View Modes */}
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                        onClick={() => setViewMode('map')}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            background: viewMode === 'map' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+                            color: viewMode === 'map' ? '#000' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Peta Orbit 🌌
+                    </button>
+                    <button
+                        onClick={() => setViewMode('grid')}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            background: viewMode === 'grid' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
+                            color: viewMode === 'grid' ? '#000' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Kartu 🗂️
+                    </button>
+                </div>
+
+                {/* Tools (Light & Pause) */}
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                        onClick={() => setIsFullBright(!isFullBright)}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            background: isFullBright ? '#FFD700' : 'rgba(255,255,255,0.1)',
+                            color: isFullBright ? '#000' : '#fff',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {isFullBright ? '💡 Fullbright: ON' : '🌑 Fullbright: OFF'}
+                    </button>
+                    <button
+                        className="mobile-only"
+                        onClick={() => setIsPaused(!isPaused)}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '20px',
+                            background: isPaused ? '#ff4444' : 'rgba(255,255,255,0.1)',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        {isPaused ? '⏸️ Desim: PAUSED' : '▶️ Desim: PLAY'}
+                    </button>
+                </div>
             </div>
 
             {viewMode === 'map' ? (
@@ -52,6 +100,8 @@ const Explore = () => {
                     <SolarSystemMap
                         onPlanetClick={setSelectedPlanet}
                         focusedPlanet={selectedPlanet}
+                        isPaused={isPaused}
+                        isFullBright={isFullBright}
                     />
 
                     {/* NASA-Style Info Sidebar */}

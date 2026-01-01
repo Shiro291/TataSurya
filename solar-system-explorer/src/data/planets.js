@@ -34,40 +34,7 @@ export const planets = [
         yearDuration: '88 Hari Bumi',
         distance: '58 Jt km',
         imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg',
-        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/28/Solarsystemscope_texture_2k_mercury.jpg', // Re-attempt with exact search result match if possible, or fallback to reliable
-        // Actually, to avoid 404 risk, I will use the known "Mercury - complete mono basemap" if possible?
-        // Wait, the user said "error loading 3d model". That means the previous URLs were WRONG.
-        // I need to use the Wikimedia File Page URL => Image URL pattern.
-        // Best approach: Use a Github Raw CDN for Solar System Scope textures (highly reliable).
-        // BUT I can't guess.
-        // I will use `https://upload.wikimedia.org/wikipedia/commons/c/c3/Mercury_Globe_-_MESSENGER_mosaic_centered_at_0degN-0degE.jpg` is a globe.
-        // Let's try "Solarsystemscope_texture_2k_mercury.jpg" BUT I need the full path. 
-        // I'll use a specific one I found in search: "https://upload.wikimedia.org/wikipedia/commons/2/2c/Mercury_-_MESSENGER_global_mosaic_centered_at_0degN-0degE.jpg" (Wait, is this eq?)
-        // To be SAFE and FAST: I will use a reliable external host for these standard textures if allowed? No, stay on Wikimedia but get it right.
-        // Search found: "Mercury - complete mono basemap 2500mpp equirectangular.png"
-        // Pattern: https://upload.wikimedia.org/wikipedia/commons/archive/...? No.
-        // Let's try to finding the "Map of..." series again.
-
-        // BETTER PLAN: Use the `Map_of_...` format if available.
-        // Mercury: https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Solarsystemscope_texture_2k_mercury.jpg/1024px-Solarsystemscope_texture_2k_mercury.jpg
-        // Note: Wikimedia thumbs are safer to guess? `commons/2/28` is a guess.
-
-        // I'll revert to the previous "globe" ones for stability IF I can't find exact.
-        // User said "implement like sun". Sun uses `Map_of_the_full_sun.jpg`. 
-        // Is there `Map_of_Mercury.jpg`?
-
-        // I will retry the `Solarsystemscope` ones but with the correct hash found in search snippets?
-        // Snippet 1 (Mercury): "Solarsystemscope texture 8k mercury.jpg" 
-        // I'll try to find the direct link via browser for ONE planet and verify.
-        // For now, I will use a known working set of URLs from a public Github gist or similar if I can find one.
-        // Search query: "github solar system texture urls"
-
-        // Actually, I'll do this: I will set them to the "Globe" ones (old working) for now to STOP THE CRASH.
-        // AND THEN I will use the browser to `fetch` the correct URL in the background.
-        // But user said "implement like sun".
-
-        // I'll try this unique URL for Mercury which is a map:
-        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Mercury_globe_MESSENGER.png/1024px-Mercury_globe_MESSENGER.png',
+        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg', // REVERTED TO GLOBE (Bald spot, but works)
         fact: 'Satu tahun di Merkurius hanya 88 hari Bumi!'
     },
     {
@@ -86,16 +53,7 @@ export const planets = [
         yearDuration: '225 Hari Bumi',
         distance: '108 Jt km',
         imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
-        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/19/Solarsystemscope_texture_2k_venus_surface.jpg', // Likely broken URL.
-        // Fallback to "Map of Venus"
-        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Venus_-_Magellan_Globe.jpg/1024px-Venus_-_Magellan_Globe.jpg', // Still globe?
-        // Let's rely on the "Map_of_the_full_sun" analogy (Equirectangular).
-        // Try: https://upload.wikimedia.org/wikipedia/commons/a/ac/Map_of_Venus.jpg
-
-        // OKAY, I will put back the OLD WORKING TEXTURES (Step 370) to ensure the app works.
-        // The user explicitly said they prefer "sun-like" (no bald spot) but FIRST "rollback".
-        // I'll stick to Step 370 urls.
-        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1c/Venus_-_Magellan_Globe.jpg',
+        textureUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg', // REVERTED TO GLOBE
         fact: 'Matahari terbit dari Barat di sini karena dia berputar terbalik!'
     },
     {
