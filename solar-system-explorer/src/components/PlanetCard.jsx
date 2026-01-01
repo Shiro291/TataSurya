@@ -4,66 +4,52 @@ import { motion } from 'framer-motion';
 const PlanetCard = ({ planet, onClick }) => {
     return (
         <motion.div
-            whileHover={{ scale: 1.05, y: -10 }}
+            whileHover={{ scale: 1.05, boxShadow: `0 0 30px ${planet.glowColor}` }}
             whileTap={{ scale: 0.95 }}
             onClick={onClick}
             style={{
-                background: 'var(--glass)',
-                border: '1px solid var(--glass-border)',
+                background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
                 borderRadius: '20px',
-                padding: '20px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
+                padding: '30px',
                 cursor: 'pointer',
-                backdropFilter: 'blur(10px)',
-                width: '240px',
-                position: 'relative',
-                overflow: 'hidden'
+                border: `2px solid ${planet.color}`,
+                boxShadow: `0 0 20px ${planet.glowColor}33`,
+                transition: 'all 0.3s',
+                width: '280px',
+                textAlign: 'center'
             }}
         >
-            {/* Decorative Glow */}
-            <div style={{
-                position: 'absolute',
-                top: '-50%',
-                left: '-50%',
-                width: '200%',
-                height: '200%',
-                background: `radial-gradient(circle, ${planet.glowColor}22 0%, transparent 70%)`,
-                zIndex: 0,
-                pointerEvents: 'none'
-            }} />
+            {/* Planet Image */}
+            <img
+                src={planet.imgUrl}
+                alt={planet.name}
+                style={{
+                    width: '150px',
+                    height: '150px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    margin: '0 auto 20px',
+                    display: 'block',
+                    boxShadow: `0 0 30px ${planet.glowColor}66`
+                }}
+            />
 
-            {/* Planet Circle Representation */}
-            <div style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                background: `linear-gradient(135deg, ${planet.color}, #000)`,
-                boxShadow: `0 0 20px ${planet.glowColor}66`, // glowing effect
-                marginBottom: '15px',
-                zIndex: 1,
-                position: 'relative'
-            }} className="animate-float" />
-
-            <h2 style={{ zIndex: 1, margin: '5px 0' }}>{planet.name}</h2>
-            <span style={{
-                zIndex: 1,
-                fontSize: '0.8rem',
-                color: 'var(--primary)',
-                textTransform: 'uppercase',
-                letterSpacing: '1px'
-            }}>{planet.type}</span>
-
-            <p style={{
-                fontSize: '0.9rem',
-                color: 'var(--text-muted)',
-                textAlign: 'center',
-                marginTop: '10px',
-                zIndex: 1
-            }}>
+            <h2 style={{ fontSize: '2rem', marginBottom: '10px', color: planet.color }}>
+                {planet.name}
+            </h2>
+            <p style={{ fontSize: '1rem', color: 'var(--text-muted)', marginBottom: '15px' }}>
                 {planet.englishName}
             </p>
+            <div style={{
+                background: `linear-gradient(45deg, ${planet.color}22, transparent)`,
+                padding: '15px',
+                borderRadius: '10px',
+                borderLeft: `3px solid ${planet.color}`
+            }}>
+                <p style={{ fontSize: '0.9rem', lineHeight: '1.5' }}>
+                    {planet.description.substring(0, 100)}...
+                </p>
+            </div>
         </motion.div>
     );
 };
