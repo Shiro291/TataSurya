@@ -73,7 +73,7 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
             <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)', // Fixed 3 columns for consistent layout
-                gap: '15px',
+                gap: isMobile ? '8px' : '15px',
                 marginBottom: '30px'
             }}>
                 {allPlanets.map(planet => {
@@ -82,7 +82,7 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
                         <div
                             key={planet.id}
                             style={{
-                                padding: '15px',
+                                padding: isMobile ? '8px' : '15px',
                                 background: isExplored
                                     ? 'rgba(102, 187, 106, 0.2)'
                                     : 'rgba(255,255,255,0.05)',
@@ -92,11 +92,11 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
                                 transition: 'all 0.3s'
                             }}
                         >
-                            <div style={{ fontSize: '2rem', marginBottom: '5px' }}>
+                            <div style={{ fontSize: isMobile ? '1.5rem' : '2rem', marginBottom: '5px' }}>
                                 {isExplored ? '✅' : '⭕'}
                             </div>
                             <div style={{
-                                fontSize: '0.9rem',
+                                fontSize: isMobile ? '0.75rem' : '0.9rem',
                                 color: isExplored ? '#66BB6A' : 'var(--text-muted)'
                             }}>
                                 {planet.name}
