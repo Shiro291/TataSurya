@@ -1,10 +1,30 @@
 import React, { useRef, useState, useMemo, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { planets } from '../data/planets';
 
-const SolarSystemMap = ({ onPlanetClick }) => {
+// Simple Error Boundary Component
+class ErrorBoundary extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+    static getDerivedStateFromError(error) {
+        return { hasError: true };
+    }
+    componentDidCatch(error, errorInfo) {
+        console.error("3D Error:", error, errorInfo);
+    }
+    render() {
+        if (this.state.hasError) {
+            return <Html center><div style={{ color: 'red' }}>⚠️ Error Loading 3D Model</div></Html>;
+        }
+        return this.props.children;
+    }
+}
+
+const SolarSystemMap = ({ onPlanetClick, focusedPlanet }) => {
     const [isPaused, setIsPaused] = useState(false);
 
     useEffect(() => {
@@ -20,7 +40,11 @@ const SolarSystemMap = ({ onPlanetClick }) => {
     return (
         <div style={{ width: '100%', height: '100vh', background: '#050510' }}>
             <Canvas camera={{ position: [0, 800, 1200], fov: 45, far: 20000 }}>
-                <Scene onPlanetClick={onPlanetClick} isPaused={isPaused} />
+                <React.Suspense fallback={<Html center><div style={{ color: 'white' }}>Memuat Texture...</div></Html>}>
+                    <ErrorBoundary>
+                        <Scene onPlanetClick={onPlanetClick} isPaused={isPaused} focusedPlanet={focusedPlanet} />
+                    </ErrorBoundary>
+                </React.Suspense>
             </Canvas>
 
             <div style={{
@@ -51,29 +75,95 @@ const SolarSystemMap = ({ onPlanetClick }) => {
     );
 };
 
-const Scene = ({ onPlanetClick, isPaused }) => {
+const Scene = ({ onPlanetClick, isPaused, focusedPlanet }) => {
+    const controlsRef = useRef();
+    const planetRefs = useRef({});
+
+    // Register refs from children
+    const setPlanetRef = (id, ref) => {
+        planetRefs.current[id] = ref;
+    };
+
+    useFrame((state, delta) => {
+        if (focusedPlanet && planetRefs.current[focusedPlanet.id]) {
+            const targetRef = planetRefs.current[focusedPlanet.id];
+
+            // Get current world position of the planet
+            const targetPos = new THREE.Vector3();
+            if (targetRef) targetRef.getWorldPosition(targetPos);
+
+            // Smoothly move controls target to planet
+            if (controlsRef.current) controlsRef.current.target.lerp(targetPos, 0.1);
+
+            // Calculate desired camera position 
+            const cameraPos = state.camera.position;
+            const distance = cameraPos.distanceTo(targetPos);
+            const desiredDist = focusedPlanet.size * 4;
+
+            if (Math.abs(distance - desiredDist) > 5) {
+                const direction = cameraPos.clone().sub(targetPos).normalize();
+                const desiredPos = targetPos.clone().add(direction.multiplyScalar(desiredDist));
+                state.camera.position.lerp(desiredPos, 0.05);
+            }
+
+        } else {
+            // RESET CAMERA TO ORBIT VIEW
+            const defaultTarget = new THREE.Vector3(0, 0, 0);
+
+            if (controlsRef.current) {
+                // Lerp target back to Sun/Center
+                controlsRef.current.target.lerp(defaultTarget, 0.05);
+            }
+            // Optionally move camera back to specific nice view?
+            // If user moved it manually, maybe don't force reset position?
+            // "see the whole map again as whole after u zoomed in" implies yes.
+            // But if user explores manually, it might be annoying.
+            // Let's reset to a nice high ISO view if it's too close to a previous planet.
+
+            // Minimal reset to ensure whole system is viewable
+            // state.camera.position.lerp(new THREE.Vector3(0, 800, 1200), 0.02);
+            // Note: Moving camera while controls are active might fight user input if they are dragging.
+            // We only do this if "Reset" implies auto-navigation. 
+            // Since "Back to Orbit" is clicked, focusedPlanet becomes null.
+            // So yes, we should fly back.
+            state.camera.position.lerp(new THREE.Vector3(0, 800, 1200), 0.02);
+        }
+
+        if (controlsRef.current) controlsRef.current.update();
+    });
+
     return (
         <>
-            <ambientLight intensity={0.2} />
-            <pointLight position={[0, 0, 0]} intensity={3} color="#FFD700" distance={5000} decay={0.5} />
+            {/* Lighting Fix: Low ambient for dark side shadows, strong point for sun */}
+            <ambientLight intensity={0.05} />
+            <pointLight position={[0, 0, 0]} intensity={2.5} color="#FFD700" distance={5000} decay={0.2} />
 
-            {/* Huge starfield to prevent clipping */}
             <Stars radius={5000} depth={50} count={10000} factor={6} saturation={0.5} fade speed={0.5} />
 
             {/* Sun */}
-            <Sun onClick={() => onPlanetClick(planets[0])} data={planets[0]} />
+            <Sun
+                onClick={() => onPlanetClick(planets[0])}
+                data={planets[0]}
+                setRef={setPlanetRef}
+            />
 
             {/* Planets */}
             {planets.slice(1).map((planet) => (
-                <Planet key={planet.id} data={planet} onClick={onPlanetClick} isPaused={isPaused} />
+                <Planet
+                    key={planet.id}
+                    data={planet}
+                    onClick={onPlanetClick}
+                    isPaused={isPaused}
+                    setRef={setPlanetRef}
+                />
             ))}
 
-            {/* Asteroid Belt */}
             <AsteroidBelt count={1500} radius={315} isPaused={isPaused} />
 
             <OrbitControls
+                ref={controlsRef}
                 enablePan={true}
-                minDistance={100}
+                minDistance={20} // Allow closer zoom
                 maxDistance={4000}
                 rotateSpeed={0.5}
             />
@@ -81,14 +171,22 @@ const Scene = ({ onPlanetClick, isPaused }) => {
     );
 };
 
-const Sun = ({ onClick, data }) => {
+const Sun = ({ onClick, data, setRef }) => {
+    const meshRef = useRef();
+    // Fallback to color if texture fails (or use error boundary)
+    // For now simple useLoader.
+    const texture = useLoader(THREE.TextureLoader, data.textureUrl);
+
+    useEffect(() => {
+        if (setRef) setRef(data.id, meshRef.current);
+    }, [data.id, setRef]);
+
     return (
-        <group onClick={(e) => { e.stopPropagation(); onClick(data); }}>
+        <group ref={meshRef} onClick={(e) => { e.stopPropagation(); onClick(data); }}>
             <mesh>
-                <sphereGeometry args={[data.size, 32, 32]} />
-                <meshBasicMaterial color={data.color} />
+                <sphereGeometry args={[data.size, 64, 64]} />
+                <meshBasicMaterial map={texture} color={data.color} />
             </mesh>
-            {/* Glow Effect using scaled mesh */}
             <mesh scale={[1.2, 1.2, 1.2]}>
                 <sphereGeometry args={[data.size, 32, 32]} />
                 <meshBasicMaterial color={data.glowColor} transparent opacity={0.3} depthWrite={false} />
@@ -101,68 +199,61 @@ const Sun = ({ onClick, data }) => {
     );
 };
 
-const Planet = ({ data, onClick, isPaused }) => {
+const Planet = ({ data, onClick, isPaused, setRef }) => {
     const meshRef = useRef();
     const orbitRef = useRef();
     const [hovered, setHovered] = useState(false);
 
+    // Load Texture
+    const texture = useLoader(THREE.TextureLoader, data.textureUrl);
+
     // Random start angle
     const startAngle = useMemo(() => Math.random() * Math.PI * 2, []);
-    // Store current angle to handle pause/resume accurately without jumping
     const angleRef = useRef(startAngle);
 
-    useFrame(({ clock }, delta) => {
-        // Orbital rotation
-        if (orbitRef.current && !isPaused) {
-            // Increment angle based on speed
-            // Base speed is 1 (Earth Year 10s -> 0.1 rad/s approx? No let's keep logic simple)
-            // Previously: angle = startAngle + (t * (10 / speed))
-            // To support pause, we must increment manually
-            const speedFactor = (10 / data.orbitSpeed) * delta * 0.5; // Scale time
-            angleRef.current += speedFactor;
+    useEffect(() => {
+        if (setRef) setRef(data.id, meshRef.current);
+    }, [data.id, setRef]);
 
+    useFrame(({ clock }, delta) => {
+        if (orbitRef.current && !isPaused) {
+            const speedFactor = (10 / data.orbitSpeed) * delta * 0.5;
+            angleRef.current += speedFactor;
             orbitRef.current.position.x = Math.cos(angleRef.current) * data.orbitRadius;
             orbitRef.current.position.z = Math.sin(angleRef.current) * data.orbitRadius;
         }
-
-        // Self rotation
         if (meshRef.current && !isPaused) {
-            meshRef.current.rotation.y += 0.01;
+            meshRef.current.rotation.y += 0.005;
         }
     });
 
     return (
         <>
-            {/* Orbit Path (Visual Line) */}
             <mesh rotation={[-Math.PI / 2, 0, 0]}>
                 <ringGeometry args={[data.orbitRadius - 0.5, data.orbitRadius + 0.5, 128]} />
                 <meshBasicMaterial color="#ffffff" opacity={0.1} transparent side={THREE.DoubleSide} />
             </mesh>
 
-            {/* Planet Group */}
             <group ref={orbitRef} position={[
                 Math.cos(startAngle) * data.orbitRadius,
                 0,
                 Math.sin(startAngle) * data.orbitRadius
             ]}>
-                {/* Initial position is needed to avoid jump on first frame? No, useFrame runs imm. */}
-
                 <group ref={meshRef}>
                     <mesh
                         onClick={(e) => { e.stopPropagation(); onClick(data); }}
                         onPointerOver={() => setHovered(true)}
                         onPointerOut={() => setHovered(false)}
                     >
-                        <sphereGeometry args={[data.size, 32, 32]} />
+                        <sphereGeometry args={[data.size, 64, 64]} />
                         <meshStandardMaterial
-                            color={data.color}
-                            emissive={data.color}
-                            emissiveIntensity={0.2}
-                            roughness={0.7}
+                            map={texture}
+                            emissive={new THREE.Color(0x000000)}
+                            roughness={1}
+                            metalness={0.1}
                         />
                     </mesh>
 
-                    {/* Rings (e.g. Saturn) */}
                     {data.ring && (
                         <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
                             <ringGeometry args={[data.ring.innerRadius, data.ring.outerRadius, 64]} />
@@ -171,7 +262,6 @@ const Planet = ({ data, onClick, isPaused }) => {
                     )}
                 </group>
 
-                {/* Label (Billboard) */}
                 {hovered && (
                     <Billboard position={[0, data.ring ? data.ring.outerRadius + 20 : data.size + 20, 0]}>
                         <Html center distanceFactor={1000} zIndexRange={[100, 0]}>
@@ -180,8 +270,7 @@ const Planet = ({ data, onClick, isPaused }) => {
                                 color: 'white', border: `1px solid ${data.glowColor}`, whiteSpace: 'nowrap',
                                 textAlign: 'center', pointerEvents: 'none', userSelect: 'none'
                             }}>
-                                <strong>{data.name}</strong><br />
-                                <small>1 Thn = {data.yearDuration}</small>
+                                <strong>{data.name}</strong>
                             </div>
                         </Html>
                     </Billboard>
@@ -193,8 +282,6 @@ const Planet = ({ data, onClick, isPaused }) => {
 
 const AsteroidBelt = ({ count, radius, isPaused }) => {
     const meshRef = useRef();
-
-    // Generate random asteroid positions
     const asteroids = useMemo(() => {
         const temp = [];
         for (let i = 0; i < count; i++) {

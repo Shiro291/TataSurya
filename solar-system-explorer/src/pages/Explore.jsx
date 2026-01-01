@@ -10,11 +10,11 @@ const Explore = () => {
 
     return (
         <div style={{ minHeight: '100vh', position: 'relative' }}>
-            {/* View Toggle */}
+            {/* View Toggle - Moved to LEFT to avoid sidebar clash */}
             <div style={{
                 position: 'absolute',
-                top: '80px',
-                right: '20px',
+                top: '90px',
+                left: '20px',
                 zIndex: 100,
                 display: 'flex',
                 gap: '10px'
@@ -26,7 +26,8 @@ const Explore = () => {
                         borderRadius: '20px',
                         background: viewMode === 'map' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
                         color: viewMode === 'map' ? '#000' : '#fff',
-                        border: '1px solid rgba(255,255,255,0.2)'
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        cursor: 'pointer'
                     }}
                 >
                     Peta Orbit 🌌
@@ -38,8 +39,8 @@ const Explore = () => {
                         borderRadius: '20px',
                         background: viewMode === 'grid' ? 'var(--primary)' : 'rgba(255,255,255,0.1)',
                         color: viewMode === 'grid' ? '#000' : '#fff',
-                        border: '1px solid rgba(255,255,255,0.2)'
-
+                        border: '1px solid rgba(255,255,255,0.2)',
+                        cursor: 'pointer'
                     }}
                 >
                     Kartu 🗂️
@@ -47,7 +48,103 @@ const Explore = () => {
             </div>
 
             {viewMode === 'map' ? (
-                <SolarSystemMap onPlanetClick={setSelectedPlanet} />
+                <>
+                    <SolarSystemMap
+                        onPlanetClick={setSelectedPlanet}
+                        focusedPlanet={selectedPlanet}
+                    />
+
+                    {/* NASA-Style Info Sidebar */}
+                    <AnimatePresence>
+                        {selectedPlanet && (
+                            <motion.div
+                                initial={{ x: 400, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: 400, opacity: 0 }}
+                                style={{
+                                    position: 'absolute',
+                                    top: '70px',
+                                    right: '20px',
+                                    width: '350px',
+                                    height: 'calc(100vh - 100px)',
+                                    background: 'rgba(5, 5, 20, 0.85)',
+                                    backdropFilter: 'blur(10px)',
+                                    borderRadius: '20px',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    padding: '25px',
+                                    overflowY: 'auto',
+                                    color: 'white',
+                                    boxShadow: '0 0 30px rgba(0,0,0,0.5)',
+                                    zIndex: 50
+                                }}
+                            >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                                    <button
+                                        onClick={() => setSelectedPlanet(null)}
+                                        style={{
+                                            background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
+                                            padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem'
+                                        }}
+                                    >
+                                        ⬅️ Kembali ke Orbit
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedPlanet(null)}
+                                        style={{
+                                            background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+                                            fontSize: '1.2rem', cursor: 'pointer'
+                                        }}
+                                    >✕</button>
+                                </div>
+
+                                <h2 style={{ fontSize: '2.5rem', marginBottom: '5px', gradient: 'var(--gradients)' }}>{selectedPlanet.name}</h2>
+                                <h4 style={{ color: 'var(--primary)', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '2px' }}>{selectedPlanet.englishName}</h4>
+
+                                <div style={{
+                                    width: '100%', height: '2px', background: selectedPlanet.color,
+                                    margin: '0 0 20px', boxShadow: `0 0 10px ${selectedPlanet.glowColor}`
+                                }} />
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px', fontSize: '0.9rem' }}>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
+                                        <span style={{ display: 'block', opacity: 0.7 }}>🌡️ Suhu</span>
+                                        <strong>{selectedPlanet.temp}</strong>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
+                                        <span style={{ display: 'block', opacity: 0.7 }}>📍 Jarak</span>
+                                        <strong>{selectedPlanet.distance}</strong>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
+                                        <span style={{ display: 'block', opacity: 0.7 }}>⏳ Revolusi</span>
+                                        <strong>{selectedPlanet.yearDuration}</strong>
+                                    </div>
+                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
+                                        <span style={{ display: 'block', opacity: 0.7 }}>📏 Diameter</span>
+                                        <strong>{selectedPlanet.realDiameter}</strong>
+                                    </div>
+                                </div>
+
+                                <p style={{ lineHeight: '1.6', fontSize: '1rem', color: '#ddd', marginBottom: '25px' }}>
+                                    {selectedPlanet.description}
+                                </p>
+
+                                <div style={{
+                                    background: `linear-gradient(45deg, rgba(0,0,0,0.5), ${selectedPlanet.color}22)`,
+                                    padding: '15px', borderRadius: '15px', borderLeft: `3px solid ${selectedPlanet.color}`
+                                }}>
+                                    <strong>🌟 Tahukah Kamu?</strong> <br />
+                                    <span style={{ fontSize: '0.95rem', opacity: 0.9 }}>{selectedPlanet.fact}</span>
+                                </div>
+
+                                <div style={{ marginTop: '30px', textAlign: 'center' }}>
+                                    <img src={selectedPlanet.imgUrl} alt="Real" style={{ width: '100%', borderRadius: '10px', opacity: 0.8 }} />
+                                    <small style={{ display: 'block', marginTop: '5px', opacity: 0.5 }}>Foto Asli NASA</small>
+                                </div>
+
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </>
             ) : (
                 <div style={{ padding: '100px 40px 40px' }}>
                     <h1 style={{ textAlign: 'center', marginBottom: '40px', fontSize: '2.5rem' }}>Kartu Tata Surya</h1>
@@ -68,79 +165,53 @@ const Explore = () => {
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Reuse Sidebar for Grid View? Or stick to modal? Let's use Sidebar for consistency if possible, 
+                        but grid covers full screen. Let's keep Sidebar logic but ensure z-index is high. 
+                    */}
+                    <AnimatePresence>
+                        {selectedPlanet && (
+                            <motion.div
+                                initial={{ x: 400, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: 400, opacity: 0 }}
+                                style={{
+                                    position: 'fixed', // Fixed for grid view scroll
+                                    top: '70px',
+                                    right: '20px',
+                                    width: '350px',
+                                    height: 'calc(100vh - 100px)',
+                                    background: 'rgba(5, 5, 20, 0.95)',
+                                    backdropFilter: 'blur(10px)',
+                                    borderRadius: '20px',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    padding: '25px',
+                                    overflowY: 'auto',
+                                    color: 'white',
+                                    boxShadow: '0 0 50px rgba(0,0,0,0.8)',
+                                    zIndex: 200 // Higher than everything
+                                }}
+                            >
+                                <button
+                                    onClick={() => setSelectedPlanet(null)}
+                                    style={{
+                                        position: 'absolute', top: '15px', right: '15px',
+                                        background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
+                                        fontSize: '1.2rem', cursor: 'pointer'
+                                    }}
+                                >✕</button>
+                                {/* Duplicate content? For simplicity, we just copy structure. 
+                                    In real app, extract "PlanetSidebar" component. 
+                                    For now, I'll allow duplication to save multiple file edits step. 
+                                */}
+                                <h2 style={{ fontSize: '2.5rem', marginBottom: '5px' }}>{selectedPlanet.name}</h2>
+                                <img src={selectedPlanet.imgUrl} alt="Real" style={{ width: '100%', borderRadius: '10px', marginTop: '20px' }} />
+                                <p style={{ marginTop: '20px', lineHeight: '1.6' }}>{selectedPlanet.description}</p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
             )}
-
-            {/* Detail Modal */}
-            <AnimatePresence>
-                {selectedPlanet && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        style={{
-                            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-                            background: 'rgba(0,0,0,0.8)', zIndex: 200, display: 'flex',
-                            justifyContent: 'center', alignItems: 'center', backdropFilter: 'blur(5px)'
-                        }}
-                        onClick={() => setSelectedPlanet(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.5, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.5, opacity: 0 }}
-                            onClick={(e) => e.stopPropagation()}
-                            style={{
-                                background: 'var(--bg-deep)', border: '1px solid var(--primary)',
-                                padding: '40px', borderRadius: '30px', maxWidth: '600px', width: '90%',
-                                position: 'relative', textAlign: 'center', boxShadow: '0 0 50px rgba(0,240,255,0.2)'
-                            }}
-                        >
-                            <button
-                                onClick={() => setSelectedPlanet(null)}
-                                style={{ position: 'absolute', top: 20, right: 20, background: 'transparent', color: 'white', fontSize: '1.5rem' }}
-                            >✕</button>
-
-                            {/* Image or Default Circle */}
-                            {selectedPlanet.imgUrl ? (
-                                <div style={{
-                                    width: '200px', height: '200px', margin: '0 auto 20px',
-                                    borderRadius: '50%', overflow: 'hidden',
-                                    boxShadow: `0 0 30px ${selectedPlanet.glowColor}`,
-                                    border: `2px solid ${selectedPlanet.color}`
-                                }}>
-                                    <img
-                                        src={selectedPlanet.imgUrl}
-                                        alt={selectedPlanet.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                </div>
-                            ) : (
-                                <div style={{
-                                    width: '150px', height: '150px', background: selectedPlanet.color,
-                                    borderRadius: '50%', margin: '0 auto 20px',
-                                    boxShadow: `0 0 30px ${selectedPlanet.glowColor}`
-                                }} />
-                            )}
-
-                            <h2 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{selectedPlanet.name}</h2>
-                            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px', color: 'var(--primary)' }}>
-                                <span>🌡️ {selectedPlanet.temp}</span>
-                                <span>📍 {selectedPlanet.distance}</span>
-                            </div>
-
-                            <p style={{ fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '20px' }}>
-                                {selectedPlanet.description}
-                            </p>
-
-                            <div style={{ background: 'rgba(255,255,255,0.05)', padding: '15px', borderRadius: '15px' }}>
-                                <strong>Fakta Unik:</strong> <br />
-                                {selectedPlanet.fact}
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     );
 };
