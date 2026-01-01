@@ -102,26 +102,14 @@ const Scene = ({ onPlanetClick, isPaused, focusedPlanet, isFullBright }) => {
             }
 
         } else {
-            // RESET CAMERA TO ORBIT VIEW
+            // Camera reset disabled - let user control camera freely
+            // User requested to keep camera position instead of auto-resetting
             const defaultTarget = new THREE.Vector3(0, 0, 0);
-
             if (controlsRef.current) {
-                // Lerp target back to Sun/Center
+                // Only reset target to center, don't move camera position
                 controlsRef.current.target.lerp(defaultTarget, 0.05);
             }
-            // Optionally move camera back to specific nice view?
-            // If user moved it manually, maybe don't force reset position?
-            // "see the whole map again as whole after u zoomed in" implies yes.
-            // But if user explores manually, it might be annoying.
-            // Let's reset to a nice high ISO view if it's too close to a previous planet.
-
-            // Minimal reset to ensure whole system is viewable
-            // state.camera.position.lerp(new THREE.Vector3(0, 800, 1200), 0.02);
-            // Note: Moving camera while controls are active might fight user input if they are dragging.
-            // We only do this if "Reset" implies auto-navigation. 
-            // Since "Back to Orbit" is clicked, focusedPlanet becomes null.
-            // So yes, we should fly back.
-            state.camera.position.lerp(new THREE.Vector3(0, 800, 1200), 0.02);
+            // Removed: state.camera.position.lerp(new THREE.Vector3(0, 800, 1200), 0.02);
         }
 
         if (controlsRef.current) controlsRef.current.update();
