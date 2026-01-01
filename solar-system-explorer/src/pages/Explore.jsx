@@ -101,11 +101,27 @@ const Explore = () => {
                                 style={{ position: 'absolute', top: 20, right: 20, background: 'transparent', color: 'white', fontSize: '1.5rem' }}
                             >✕</button>
 
-                            <div style={{
-                                width: '150px', height: '150px', background: selectedPlanet.color,
-                                borderRadius: '50%', margin: '0 auto 20px',
-                                boxShadow: `0 0 30px ${selectedPlanet.glowColor}`
-                            }} />
+                            {/* Image or Default Circle */}
+                            {selectedPlanet.imgUrl ? (
+                                <div style={{
+                                    width: '200px', height: '200px', margin: '0 auto 20px',
+                                    borderRadius: '50%', overflow: 'hidden',
+                                    boxShadow: `0 0 30px ${selectedPlanet.glowColor}`,
+                                    border: `2px solid ${selectedPlanet.color}`
+                                }}>
+                                    <img
+                                        src={selectedPlanet.imgUrl}
+                                        alt={selectedPlanet.name}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                </div>
+                            ) : (
+                                <div style={{
+                                    width: '150px', height: '150px', background: selectedPlanet.color,
+                                    borderRadius: '50%', margin: '0 auto 20px',
+                                    boxShadow: `0 0 30px ${selectedPlanet.glowColor}`
+                                }} />
+                            )}
 
                             <h2 style={{ fontSize: '2.5rem', marginBottom: '10px' }}>{selectedPlanet.name}</h2>
                             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px', color: 'var(--primary)' }}>

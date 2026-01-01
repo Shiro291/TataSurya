@@ -13,6 +13,7 @@ export const planets = [
         orbitSpeed: 0,
         yearDuration: '-',
         distance: '0',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/b/b4/The_Sun_by_the_Atmospheric_Imaging_Assembly_of_NASA%27s_Solar_Dynamics_Observatory_-_20100819.jpg',
         fact: 'Matahari sangat besar, 1,3 juta Bumi bisa masuk ke dalamnya!'
     },
     {
@@ -29,6 +30,7 @@ export const planets = [
         orbitSpeed: 2.4, // 88 days
         yearDuration: '88 Hari Bumi',
         distance: '58 Jt km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d9/Mercury_in_color_-_Prockter07-edit1.jpg',
         fact: 'Satu tahun di Merkurius hanya 88 hari Bumi!'
     },
     {
@@ -45,6 +47,7 @@ export const planets = [
         orbitSpeed: 6.2, // 225 days
         yearDuration: '225 Hari Bumi',
         distance: '108 Jt km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/e/e5/Venus-real_color.jpg',
         fact: 'Matahari terbit dari Barat di sini karena dia berputar terbalik!'
     },
     {
@@ -61,6 +64,7 @@ export const planets = [
         orbitSpeed: 10, // 1 Year (Base)
         yearDuration: '365 Hari (1 Tahun)',
         distance: '149 Jt km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg',
         fact: '70% permukaan Bumi adalah air.'
     },
     {
@@ -77,6 +81,7 @@ export const planets = [
         orbitSpeed: 19, // 1.88 Years
         yearDuration: '687 Hari',
         distance: '228 Jt km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg',
         fact: 'Kita sedang berencana mengirim manusia ke sini lho!'
     },
     {
@@ -93,6 +98,7 @@ export const planets = [
         orbitSpeed: 120, // 12 Years
         yearDuration: '12 Tahun Bumi',
         distance: '778 Jt km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg',
         fact: 'Jupiter punya lebih dari 79 bulan!'
     },
     {
@@ -109,6 +115,12 @@ export const planets = [
         orbitSpeed: 295, // 29.5 Years
         yearDuration: '29,5 Tahun Bumi',
         distance: '1.4 M km',
+        ring: {
+            innerRadius: 50,
+            outerRadius: 80,
+            color: '#C5AB6E'
+        },
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/c/c7/Saturn_during_Equinox.jpg',
         fact: 'Cincinnya sangat tipis, padahal lebarnya ribuan kilometer.'
     },
     {
@@ -125,6 +137,7 @@ export const planets = [
         orbitSpeed: 840, // 84 Years
         yearDuration: '84 Tahun Bumi',
         distance: '2.9 M km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/3/3d/Uranus2.jpg',
         fact: 'Planet paling dingin di tata surya.'
     },
     {
@@ -141,6 +154,7 @@ export const planets = [
         orbitSpeed: 1650, // 165 Years
         yearDuration: '165 Tahun Bumi',
         distance: '4.5 M km',
+        imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/6/63/Neptune_-_Voyager_2_%2829347980845%29_flatten_crop.jpg',
         fact: 'Satu tahun di sini sama dengan 165 tahun di Bumi!'
     }
 ]
