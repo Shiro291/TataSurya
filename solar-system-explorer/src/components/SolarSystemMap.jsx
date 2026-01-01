@@ -3,6 +3,7 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls, Stars, Html, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { planets } from '../data/planets';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 // Simple Error Boundary Component
 class ErrorBoundary extends React.Component {
@@ -25,7 +26,7 @@ class ErrorBoundary extends React.Component {
 }
 
 const SolarSystemMap = ({ onPlanetClick, focusedPlanet, isPaused, isFullBright }) => {
-    // isPaused state moved to parent (Explore.jsx)
+    const isMobile = useIsMobile();
 
     return (
         <div style={{ width: '100%', height: '100vh', background: '#050510' }}>
@@ -42,19 +43,23 @@ const SolarSystemMap = ({ onPlanetClick, focusedPlanet, isPaused, isFullBright }
                 </React.Suspense>
             </Canvas>
 
-            <div className="desktop-only" style={{
-                position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)',
-                pointerEvents: 'none', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem',
-                display: 'flex', alignItems: 'center', gap: '15px'
-            }}>
-                <span>🖱️ Left Click: Putar (Rotate)</span>
-                <span>•</span>
-                <span>🖱️ Right Click: Geser (Pan)</span>
-                <span>•</span>
-                <span>🖱️ Scroll: Zoom</span>
-                <span>•</span>
-                <span>⌨️ Space: Pause/Play</span>
-            </div>
+
+            {/* Desktop Instructions - Hidden on Mobile */}
+            {!isMobile && (
+                <div style={{
+                    position: 'absolute', bottom: 30, left: '50%', transform: 'translateX(-50%)',
+                    pointerEvents: 'none', color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem',
+                    display: 'flex', alignItems: 'center', gap: '15px'
+                }}>
+                    <span>🖱️ Left Click: Putar (Rotate)</span>
+                    <span>•</span>
+                    <span>🖱️ Right Click: Geser (Pan)</span>
+                    <span>•</span>
+                    <span>🖱️ Scroll: Zoom</span>
+                    <span>•</span>
+                    <span>⌨️ Space: Pause/Play</span>
+                </div>
+            )}
 
             {/* Pause Indicator */}
             {isPaused && (
