@@ -4,6 +4,7 @@ import PlanetCard from '../components/PlanetCard';
 import SolarSystemMap from '../components/SolarSystemMap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { useMissionProgress } from '../hooks/useMissionProgress';
 
 const Explore = () => {
     const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -11,6 +12,15 @@ const Explore = () => {
     const [isPaused, setIsPaused] = useState(false);
     const [isFullBright, setIsFullBright] = useState(false);
     const isMobile = useIsMobile();
+    const { addExploredPlanet } = useMissionProgress();
+
+    // Track planet visits for mission
+    const handlePlanetClick = (planet) => {
+        setSelectedPlanet(planet);
+        if (planet.type !== 'Star') {
+            addExploredPlanet(planet.name);
+        }
+    };
 
     // Global Spacebar Pause Listener
     React.useEffect(() => {
@@ -103,7 +113,7 @@ const Explore = () => {
             {viewMode === 'map' ? (
                 <>
                     <SolarSystemMap
-                        onPlanetClick={setSelectedPlanet}
+                        onPlanetClick={handlePlanetClick}
                         focusedPlanet={selectedPlanet}
                         isPaused={isPaused}
                         isFullBright={isFullBright}
