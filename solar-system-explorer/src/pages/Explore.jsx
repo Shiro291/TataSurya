@@ -5,6 +5,12 @@ import SolarSystemMap from '../components/SolarSystemMap';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useMissionProgress } from '../hooks/useMissionProgress';
+import { useImmersiveMode } from '../hooks/useImmersiveMode';
+import { useCountdown } from '../hooks/useCountdown';
+import ImmersiveModeToggle from '../components/ImmersiveModeToggle';
+import MissionDialog from '../components/MissionDialog';
+import RocketAnimation from '../components/RocketAnimation';
+import { soundEffects } from '../utils/soundEffects';
 
 const Explore = () => {
     const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -14,12 +20,110 @@ const Explore = () => {
     const isMobile = useIsMobile();
     const { addExploredPlanet } = useMissionProgress();
 
+    // Immersive mode state
+    const { isEnabled: immersiveMode, toggle: toggleImmersive } = useImmersiveMode();
+    const [showDialog, setShowDialog] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
+    const [dialogType, setDialogType] = useState('launch');
+    const [showRocket, setShowRocket] = useState(false);
+    const [rocketDirection, setRocketDirection] = useState('launch');
+    const [pendingPlanet, setPendingPlanet] = useState(null);
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    // Countdown callback
+    const { countdown, start: startCountdown } = useCountdown(() => {
+        if (pendingPlanet) {
+            // Countdown finished - zoom to planet
+            setSelectedPlanet(pendingPlanet);
+            if (pendingPlanet.type !== 'Star') {
+                addExploredPlanet(pendingPlanet.name);
+            }
+            setPendingPlanet(null);
+            setShowDialog(false);
+
+            // Show landing message
+            setTimeout(() => {
+                soundEffects.playLanding(); // Landing sound
+                setDialogMessage(`Welcome to ${pendingPlanet.name}`);
+                setDialogType('landing');
+                setShowDialog(true);
+                setTimeout(() => {
+                    soundEffects.playSuccess(); // Success chime
+                    setShowDialog(false);
+                    setIsAnimating(false);
+                }, 1500);
+            }, 1000);
+        } else {
+            // Departing - zoom out
+            setSelectedPlanet(null);
+            setShowDialog(false);
+
+            // Show return message
+            setTimeout(() => {
+                soundEffects.playLanding(); // Landing sound
+                setDialogMessage('Back to orbit!');
+                setDialogType('landing');
+                setShowDialog(true);
+                setTimeout(() => {
+                    soundEffects.playSuccess(); // Success chime
+                    setShowDialog(false);
+                    setIsAnimating(false);
+                }, 1500);
+            }, 1000);
+        }
+    });
+
     // Track planet visits for mission
     const handlePlanetClick = (planet) => {
-        setSelectedPlanet(planet);
-        if (planet.type !== 'Star') {
-            addExploredPlanet(planet.name);
+        if (isAnimating) return; // Prevent clicks during animation
+
+        if (!immersiveMode) {
+            // Normal mode - instant
+            setSelectedPlanet(planet);
+            if (planet.type !== 'Star') {
+                addExploredPlanet(planet.name);
+            }
+            return;
         }
+
+        // Immersive mode - with countdown and animations
+        setIsAnimating(true);
+        setPendingPlanet(planet);
+        setDialogMessage(`Preparing to explore ${planet.name}`);
+        setDialogType('launch');
+        setShowDialog(true);
+        setRocketDirection('launch');
+
+        setTimeout(() => {
+            soundEffects.playRocketLaunch(); // Rocket launch sound
+            startCountdown();
+            setShowRocket(true);
+            setTimeout(() => setShowRocket(false), isMobile ? 1000 : 1500);
+        }, 1000);
+    };
+
+    // Handle closing sidebar
+    const handleCloseSidebar = () => {
+        if (isAnimating) return; // Prevent clicks during animation
+
+        if (!immersiveMode || !selectedPlanet) {
+            setSelectedPlanet(null);
+            return;
+        }
+
+        // Immersive mode - with countdown and animations
+        setIsAnimating(true);
+        setDialogMessage(`Departing from ${selectedPlanet.name}`);
+        setDialogType('launch');
+        setShowDialog(true);
+        setRocketDirection('depart');
+
+        setTimeout(() => {
+            soundEffects.playDeparture(); // Departure sound
+            startCountdown();
+            setShowRocket(true);
+            setTimeout(() => setShowRocket(false), isMobile ? 1000 : 1500);
+        }, 1000);
     };
 
     // Global Spacebar Pause Listener
@@ -35,6 +139,26 @@ const Explore = () => {
 
     return (
         <div style={{ minHeight: '100vh', position: 'relative' }}>
+            {/* Immersive Mode Toggle */}
+            <ImmersiveModeToggle
+                isEnabled={immersiveMode}
+                onToggle={toggleImmersive}
+            />
+
+            {/* Mission Dialog */}
+            <MissionDialog
+                show={showDialog}
+                message={dialogMessage}
+                countdown={countdown}
+                type={dialogType}
+            />
+
+            {/* Rocket Animation */}
+            <RocketAnimation
+                show={showRocket}
+                direction={rocketDirection}
+            />
+
             {/* View Toggle - Responsive positioning */}
             <div style={{
                 position: 'absolute',
@@ -149,7 +273,7 @@ const Explore = () => {
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                                     {!isMobile && (
                                         <button
-                                            onClick={() => setSelectedPlanet(null)}
+                                            onClick={handleCloseSidebar}
                                             style={{
                                                 background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
                                                 padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem'
@@ -159,7 +283,7 @@ const Explore = () => {
                                         </button>
                                     )}
                                     <button
-                                        onClick={() => setSelectedPlanet(null)}
+                                        onClick={handleCloseSidebar}
                                         style={{
                                             background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
                                             fontSize: isMobile ? '2rem' : '1.2rem',

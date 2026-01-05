@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { planets } from '../../data/planets';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -9,6 +9,31 @@ const ExplorationQuest = ({ exploredPlanets, onContinue }) => {
     const progress = exploredPlanets.length;
     const total = allPlanets.length;
     const isComplete = progress === total;
+
+    // Cheat mode: Ctrl+G to auto-complete exploration
+    useEffect(() => {
+        const handleCheat = (e) => {
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                // Get mission progress from localStorage
+                const saved = localStorage.getItem('mission_progress');
+                if (saved) {
+                    const progress = JSON.parse(saved);
+                    // Add all planets to explored list
+                    const allPlanetNames = allPlanets.map(p => p.name);
+                    progress.exploredPlanets = allPlanetNames;
+                    localStorage.setItem('mission_progress', JSON.stringify(progress));
+                    // Show notification
+                    alert('🎮 CHEAT MODE ACTIVATED!\n\nAll planets have been explored! 🚀');
+                    // Reload to update UI
+                    window.location.reload();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleCheat);
+        return () => window.removeEventListener('keydown', handleCheat);
+    }, [allPlanets]);
 
     return (
         <motion.div
