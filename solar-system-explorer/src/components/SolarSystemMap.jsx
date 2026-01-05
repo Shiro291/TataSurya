@@ -152,7 +152,14 @@ const Scene = ({ onPlanetClick, isPaused, focusedPlanet, isFullBright }) => {
                 />
             ))}
 
-            <AsteroidBelt count={1500} radius={315} isPaused={isPaused} />
+            {/* Main Asteroid Belt (Between Mars & Jupiter) */}
+            <AsteroidBelt count={1500} radius={315} width={60} color="#8d6e63" size={0.8} />
+
+            {/* Kuiper Belt (Beyond Neptune) */}
+            <AsteroidBelt count={3000} radius={700} width={200} color="#b0c4de" size={1.2} />
+
+            {/* Scattered Asteroids (Randomly in the system) */}
+            <ScatteredAsteroids count={500} minRadius={120} maxRadius={600} />
 
             <OrbitControls
                 ref={controlsRef}
@@ -274,37 +281,89 @@ const Planet = ({ data, onClick, isPaused, setRef }) => {
     );
 };
 
-const AsteroidBelt = ({ count, radius, isPaused }) => {
+const AsteroidBelt = ({ count, radius, width = 80, color = "#aaa", size = 1, isPaused }) => {
     const meshRef = useRef();
+    const dummy = useMemo(() => new THREE.Object3D(), []);
     const asteroids = useMemo(() => {
         const temp = [];
         for (let i = 0; i < count; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const r = radius + (Math.random() - 0.5) * 80;
+            const r = radius + (Math.random() - 0.5) * width;
             const x = Math.cos(angle) * r;
             const z = Math.sin(angle) * r;
-            const y = (Math.random() - 0.5) * 20;
-            const scale = Math.random() * 3 + 1;
-            temp.push({ pos: [x, y, z], scale: [scale, scale, scale] });
+            const y = (Math.random() - 0.5) * (width / 4);
+            const scale = Math.random() * size + 0.5;
+            temp.push({ pos: new THREE.Vector3(x, y, z), scale: new THREE.Vector3(scale, scale, scale), rotation: [Math.random() * Math.PI, Math.random() * Math.PI, 0] });
         }
         return temp;
-    }, [count, radius]);
+    }, [count, radius, width, size]);
+
+    useEffect(() => {
+        if (!meshRef.current) return;
+        asteroids.forEach((data, i) => {
+            dummy.position.copy(data.pos);
+            dummy.rotation.set(...data.rotation);
+            dummy.scale.copy(data.scale);
+            dummy.updateMatrix();
+            meshRef.current.setMatrixAt(i, dummy.matrix);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+    }, [asteroids, dummy]);
 
     useFrame(() => {
         if (meshRef.current && !isPaused) {
-            meshRef.current.rotation.y += 0.0005;
+            meshRef.current.rotation.y += 0.0002;
         }
     });
 
     return (
-        <group ref={meshRef}>
-            {asteroids.map((data, i) => (
-                <mesh key={i} position={data.pos} scale={data.scale}>
-                    <dodecahedronGeometry args={[1, 0]} />
-                    <meshStandardMaterial color="#aaa" roughness={0.6} metalness={0.4} />
-                </mesh>
-            ))}
-        </group>
+        <instancedMesh ref={meshRef} args={[null, null, count]}>
+            <dodecahedronGeometry args={[1, 0]} />
+            <meshStandardMaterial color={color} roughness={0.8} metalness={0.2} />
+        </instancedMesh>
+    );
+}
+
+const ScatteredAsteroids = ({ count, minRadius, maxRadius, isPaused }) => {
+    const meshRef = useRef();
+    const dummy = useMemo(() => new THREE.Object3D(), []);
+    const asteroids = useMemo(() => {
+        const temp = [];
+        for (let i = 0; i < count; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const r = minRadius + Math.random() * (maxRadius - minRadius);
+            const x = Math.cos(angle) * r;
+            const z = Math.sin(angle) * r;
+            const y = (Math.random() - 0.5) * 100;
+            const scale = Math.random() * 0.8 + 0.2;
+            temp.push({ pos: new THREE.Vector3(x, y, z), scale: new THREE.Vector3(scale, scale, scale), rotation: [Math.random() * Math.PI, Math.random() * Math.PI, 0] });
+        }
+        return temp;
+    }, [count, minRadius, maxRadius]);
+
+    useEffect(() => {
+        if (!meshRef.current) return;
+        asteroids.forEach((data, i) => {
+            dummy.position.copy(data.pos);
+            dummy.rotation.set(...data.rotation);
+            dummy.scale.copy(data.scale);
+            dummy.updateMatrix();
+            meshRef.current.setMatrixAt(i, dummy.matrix);
+        });
+        meshRef.current.instanceMatrix.needsUpdate = true;
+    }, [asteroids, dummy]);
+
+    useFrame(() => {
+        if (meshRef.current && !isPaused) {
+            meshRef.current.rotation.y -= 0.0001;
+        }
+    });
+
+    return (
+        <instancedMesh ref={meshRef} args={[null, null, count]}>
+            <dodecahedronGeometry args={[1, 0]} />
+            <meshBasicMaterial color="#666" transparent opacity={0.6} />
+        </instancedMesh>
     );
 }
 

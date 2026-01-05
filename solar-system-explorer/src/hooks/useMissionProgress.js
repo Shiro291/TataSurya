@@ -10,6 +10,7 @@ export const useMissionProgress = () => {
             exploredPlanets: [],
             quizAnswers: {},
             quizScore: 0,
+            quizMastery: {},
             reportDraft: '',
             studentName: '',
             completed: false,
@@ -41,8 +42,8 @@ export const useMissionProgress = () => {
         }));
     };
 
-    const setQuizScore = (score) => {
-        setProgress(prev => ({ ...prev, quizScore: score }));
+    const setQuizScore = (score, mastery = {}) => {
+        setProgress(prev => ({ ...prev, quizScore: score, quizMastery: mastery }));
     };
 
     const saveReportDraft = (text) => {

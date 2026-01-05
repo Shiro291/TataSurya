@@ -38,8 +38,11 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
         if (currentQ < questions.length - 1) {
             setCurrentQ(currentQ + 1);
         } else {
-            // Calculate final score
-            const score = questions.reduce((acc, q) => {
+            // Calculate final score and mastery
+            const mastery = {};
+            let totalScore = 0;
+
+            questions.forEach(q => {
                 let correct = false;
                 const ans = answers[q.id];
 
@@ -55,11 +58,16 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
                     correct = wordCount >= q.minWords && hasKeywords;
                 }
 
-                return acc + (correct ? 1 : 0);
-            }, 0);
+                if (correct) totalScore++;
 
-            const percentage = Math.round((score / questions.length) * 100);
-            onComplete(percentage, answers);
+                // Track mastery by category
+                if (!mastery[q.category]) mastery[q.category] = { correct: 0, total: 0 };
+                mastery[q.category].total++;
+                if (correct) mastery[q.category].correct++;
+            });
+
+            const percentage = Math.round((totalScore / questions.length) * 100);
+            onComplete(percentage, answers, mastery);
         }
     };
 

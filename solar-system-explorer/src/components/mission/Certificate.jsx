@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { useIsMobile } from '../../hooks/useIsMobile';
 
-const Certificate = ({ studentName, score, exploredCount, onRestart }) => {
+const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) => {
     const isMobile = useIsMobile();
     const [name, setName] = useState(studentName || '');
     const [showCert, setShowCert] = useState(!!studentName);
@@ -192,6 +192,38 @@ const Certificate = ({ studentName, score, exploredCount, onRestart }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Competencies */}
+            {mastery && Object.keys(mastery).length > 0 && (
+                <div style={{ marginBottom: '30px', textAlign: 'left' }}>
+                    <h4 style={{ color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '15px' }}>
+                        📊 Kompetensi yang Dikuasai:
+                    </h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
+                        {Object.entries(mastery).map(([category, stats]) => {
+                            const percent = Math.round((stats.correct / stats.total) * 100);
+                            return (
+                                <div key={category} style={{
+                                    background: 'rgba(255,255,255,0.05)',
+                                    padding: '10px',
+                                    borderRadius: '8px',
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                                }}>
+                                    <span>{category}</span>
+                                    <span style={{
+                                        color: percent >= 70 ? '#66BB6A' : percent >= 40 ? '#FFA726' : '#EF5350',
+                                        fontWeight: 'bold'
+                                    }}>
+                                        {percent}%
+                                    </span>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
 
             {/* Date */}
             <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '30px' }}>

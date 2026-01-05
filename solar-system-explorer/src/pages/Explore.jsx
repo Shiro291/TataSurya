@@ -10,7 +10,9 @@ import { useCountdown } from '../hooks/useCountdown';
 import ImmersiveModeToggle from '../components/ImmersiveModeToggle';
 import MissionDialog from '../components/MissionDialog';
 import RocketAnimation from '../components/RocketAnimation';
+import PlanetDetailPanel from '../components/PlanetDetailPanel';
 import { soundEffects } from '../utils/soundEffects';
+import { useAchievements } from '../hooks/useAchievements';
 
 const Explore = () => {
     const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -19,6 +21,9 @@ const Explore = () => {
     const [isFullBright, setIsFullBright] = useState(false);
     const isMobile = useIsMobile();
     const { addExploredPlanet } = useMissionProgress();
+    const { visitPlanet } = useAchievements();
+
+    // Immersive mode state
 
     // Immersive mode state
     const { isEnabled: immersiveMode, toggle: toggleImmersive } = useImmersiveMode();
@@ -37,6 +42,7 @@ const Explore = () => {
             setSelectedPlanet(pendingPlanet);
             if (pendingPlanet.type !== 'Star') {
                 addExploredPlanet(pendingPlanet.name);
+                visitPlanet(pendingPlanet.name); // Achievement check
             }
             setPendingPlanet(null);
             setShowDialog(false);
@@ -82,6 +88,7 @@ const Explore = () => {
             setSelectedPlanet(planet);
             if (planet.type !== 'Star') {
                 addExploredPlanet(planet.name);
+                visitPlanet(planet.name); // Achievement check
             }
             return;
         }
@@ -243,103 +250,13 @@ const Explore = () => {
                         isFullBright={isFullBright}
                     />
 
-                    {/* NASA-Style Info Sidebar */}
+                    {/* Planet Info Detail Panel (New Immersive V2) */}
                     <AnimatePresence>
                         {selectedPlanet && (
-                            <motion.div
-                                initial={{ x: isMobile ? 0 : 400, y: isMobile ? '100%' : 0, opacity: 0 }}
-                                animate={{ x: 0, y: 0, opacity: 1 }}
-                                exit={{ x: isMobile ? 0 : 400, y: isMobile ? '100%' : 0, opacity: 0 }}
-                                style={{
-                                    position: isMobile ? 'fixed' : 'absolute',
-                                    top: isMobile ? '0' : '70px',
-                                    right: isMobile ? '0' : '20px',
-                                    left: isMobile ? '0' : 'auto',
-                                    bottom: isMobile ? '0' : 'auto',
-                                    width: isMobile ? '100%' : '350px',
-                                    height: isMobile ? '100vh' : 'calc(100vh - 100px)',
-                                    background: isMobile ? 'rgba(5, 5, 20, 0.98)' : 'rgba(5, 5, 20, 0.85)',
-                                    backdropFilter: 'blur(10px)',
-                                    borderRadius: isMobile ? '0' : '20px',
-                                    border: '1px solid rgba(255,255,255,0.1)',
-                                    padding: isMobile ? '20px' : '25px',
-                                    paddingTop: isMobile ? '80px' : '25px',
-                                    overflowY: 'auto',
-                                    color: 'white',
-                                    boxShadow: '0 0 30px rgba(0,0,0,0.5)',
-                                    zIndex: 200
-                                }}
-                            >
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                                    {!isMobile && (
-                                        <button
-                                            onClick={handleCloseSidebar}
-                                            style={{
-                                                background: 'rgba(255,255,255,0.1)', border: 'none', color: 'white',
-                                                padding: '8px 12px', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem'
-                                            }}
-                                        >
-                                            ⬅️ Kembali ke Orbit
-                                        </button>
-                                    )}
-                                    <button
-                                        onClick={handleCloseSidebar}
-                                        style={{
-                                            background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.5)',
-                                            fontSize: isMobile ? '2rem' : '1.2rem',
-                                            cursor: 'pointer',
-                                            minWidth: '44px',
-                                            minHeight: '44px',
-                                            marginLeft: isMobile ? 'auto' : '0'
-                                        }}
-                                    >✕</button>
-                                </div>
-
-                                <h2 style={{ fontSize: '2.5rem', marginBottom: '5px', gradient: 'var(--gradients)' }}>{selectedPlanet.name}</h2>
-                                <h4 style={{ color: 'var(--primary)', marginBottom: '20px', textTransform: 'uppercase', letterSpacing: '2px' }}>{selectedPlanet.englishName}</h4>
-
-                                <div style={{
-                                    width: '100%', height: '2px', background: selectedPlanet.color,
-                                    margin: '0 0 20px', boxShadow: `0 0 10px ${selectedPlanet.glowColor}`
-                                }} />
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px', fontSize: '0.9rem' }}>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
-                                        <span style={{ display: 'block', opacity: 0.7 }}>🌡️ Suhu</span>
-                                        <strong>{selectedPlanet.temp}</strong>
-                                    </div>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
-                                        <span style={{ display: 'block', opacity: 0.7 }}>📍 Jarak</span>
-                                        <strong>{selectedPlanet.distance}</strong>
-                                    </div>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
-                                        <span style={{ display: 'block', opacity: 0.7 }}>⏳ Revolusi</span>
-                                        <strong>{selectedPlanet.yearDuration}</strong>
-                                    </div>
-                                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '10px', borderRadius: '10px' }}>
-                                        <span style={{ display: 'block', opacity: 0.7 }}>📏 Diameter</span>
-                                        <strong>{selectedPlanet.realDiameter}</strong>
-                                    </div>
-                                </div>
-
-                                <p style={{ lineHeight: '1.6', fontSize: '1rem', color: '#ddd', marginBottom: '25px' }}>
-                                    {selectedPlanet.description}
-                                </p>
-
-                                <div style={{
-                                    background: `linear-gradient(45deg, rgba(0,0,0,0.5), ${selectedPlanet.color}22)`,
-                                    padding: '15px', borderRadius: '15px', borderLeft: `3px solid ${selectedPlanet.color}`
-                                }}>
-                                    <strong>🌟 Tahukah Kamu?</strong> <br />
-                                    <span style={{ fontSize: '0.95rem', opacity: 0.9 }}>{selectedPlanet.fact}</span>
-                                </div>
-
-                                <div style={{ marginTop: '30px', textAlign: 'center' }}>
-                                    <img src={selectedPlanet.imgUrl} alt="Real" style={{ width: '100%', borderRadius: '10px', opacity: 0.8 }} />
-                                    <small style={{ display: 'block', marginTop: '5px', opacity: 0.5 }}>Foto Asli NASA</small>
-                                </div>
-
-                            </motion.div>
+                            <PlanetDetailPanel
+                                planet={selectedPlanet}
+                                onClose={handleCloseSidebar}
+                            />
                         )}
                     </AnimatePresence>
                 </>
@@ -409,8 +326,9 @@ const Explore = () => {
                         )}
                     </AnimatePresence>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 

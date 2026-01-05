@@ -1,0 +1,102 @@
+/* Planet Surface Backgrounds */
+.mercury-surface {
+    background: radial-gradient(circle at 30% 30%, #a1a1a1, #4a4a4a);
+}
+
+.venus-surface {
+    background: radial-gradient(circle at 70% 30%, #e6ac00, #b8860b);
+    animation: heatHaze 10s infinite alternate;
+}
+
+.earth-surface {
+    background: linear-gradient(135deg, #1a237e, #004d40);
+}
+
+.mars-surface {
+    background: radial-gradient(circle at 50% 50%, #d32f2f, #8d6e63);
+    animation: dustStorm 15s infinite linear;
+}
+
+.jupiter-surface {
+    background: repeating-linear-gradient(0deg,
+            #d7ccc8,
+            #d7ccc8 20px,
+            #8d6e63 20px,
+            #8d6e63 40px,
+            #ffccbc 40px,
+            #ffccbc 60px);
+    animation: gasGiantFlow 30s infinite linear;
+}
+
+.saturn-surface {
+    background: linear-gradient(15deg, #ffcc80, #ffe0b2);
+}
+
+.uranus-surface {
+    background: radial-gradient(circle, #00bcd4, #006064);
+}
+
+.neptune-surface {
+    background: radial-gradient(circle, #304ffe, #1a237e);
+    animation: stormPulse 8s infinite alternate;
+}
+
+.sun-surface {
+    background: radial-gradient(circle, #ffd54f, #ff6f00);
+    animation: solarFlare 5s infinite alternate;
+}
+
+/* Animations */
+@keyframes heatHaze {
+    0% {
+        filter: blur(0px) brightness(1);
+    }
+
+    100% {
+        filter: blur(2px) brightness(1.2);
+    }
+}
+
+@keyframes dustStorm {
+    0% {
+        filter: sepia(0.5) contrast(1.2);
+    }
+
+    50% {
+        filter: sepia(0.8) contrast(1);
+    }
+
+    100% {
+        filter: sepia(0.5) contrast(1.2);
+    }
+}
+
+@keyframes gasGiantFlow {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: 0 100%;
+    }
+}
+
+@keyframes stormPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes solarFlare {
+    0% {
+        box-shadow: 0 0 50px #ff6f00 inset;
+    }
+
+    100% {
+        box-shadow: 0 0 100px #ffca28 inset;
+    }
+}

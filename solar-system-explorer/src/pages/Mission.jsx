@@ -20,8 +20,8 @@ const Mission = () => {
         setStage(2);
     };
 
-    const handleQuizComplete = (score, answers) => {
-        setQuizScore(score);
+    const handleQuizComplete = (score, answers, mastery) => {
+        setQuizScore(score, mastery);
         if (score >= 60) {
             setStage(3);
         } else {
@@ -69,6 +69,7 @@ const Mission = () => {
                     <Certificate
                         studentName={progress.studentName}
                         score={progress.quizScore}
+                        mastery={progress.quizMastery}
                         exploredCount={progress.exploredPlanets.length}
                         onRestart={handleCertificateRestart}
                     />
@@ -113,10 +114,10 @@ const Mission = () => {
                                     : 'rgba(255,255,255,0.1)',
                             color: progress.stage === stage.num ? '#000' : '#fff',
                             border: `2px solid ${progress.stage === stage.num
-                                    ? 'var(--primary)'
-                                    : progress.stage > stage.num
-                                        ? '#66BB6A'
-                                        : 'rgba(255,255,255,0.2)'
+                                ? 'var(--primary)'
+                                : progress.stage > stage.num
+                                    ? '#66BB6A'
+                                    : 'rgba(255,255,255,0.2)'
                                 }`,
                             fontSize: '0.9rem',
                             fontWeight: 'bold',

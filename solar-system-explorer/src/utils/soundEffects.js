@@ -161,6 +161,151 @@ class SoundEffects {
     setEnabled(enabled) {
         this.enabled = enabled;
     }
+
+    // Ambient Sound System for Planet Atmospheres
+    playAmbient(type) {
+        // Stop any existing ambient sound
+        this.stopAmbient();
+
+        if (!this.enabled || !type || type === 'none') return;
+
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.ambientContext = new AudioContext();
+
+        this.ambientGain = this.ambientContext.createGain();
+        this.ambientGain.gain.value = 0.15; // Low volume for ambient
+        this.ambientGain.connect(this.ambientContext.destination);
+
+        switch (type) {
+            case 'wind': // Mars, Uranus
+                // Low frequency wind sound
+                this.ambientOscillator = this.ambientContext.createOscillator();
+                this.ambientOscillator.type = 'sawtooth';
+                this.ambientOscillator.frequency.value = 80;
+
+                const windLFO = this.ambientContext.createOscillator();
+                windLFO.frequency.value = 0.5;
+                const windLFOGain = this.ambientContext.createGain();
+                windLFOGain.gain.value = 20;
+                windLFO.connect(windLFOGain);
+                windLFOGain.connect(this.ambientOscillator.frequency);
+
+                this.ambientOscillator.connect(this.ambientGain);
+                this.ambientOscillator.start();
+                windLFO.start();
+                break;
+
+            case 'hum': // Saturn, Sun
+                // Deep mechanical hum
+                this.ambientOscillator = this.ambientContext.createOscillator();
+                this.ambientOscillator.type = 'sine';
+                this.ambientOscillator.frequency.value = 60;
+
+                const osc2 = this.ambientContext.createOscillator();
+                osc2.type = 'sine';
+                osc2.frequency.value = 90;
+
+                this.ambientOscillator.connect(this.ambientGain);
+                osc2.connect(this.ambientGain);
+                this.ambientOscillator.start();
+                osc2.start();
+                break;
+
+            case 'storm': // Jupiter, Neptune
+                // Chaotic storm sounds using noise
+                const bufferSize = this.ambientContext.sampleRate * 2;
+                const noiseBuffer = this.ambientContext.createBuffer(1, bufferSize, this.ambientContext.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                this.ambientNoise = this.ambientContext.createBufferSource();
+                this.ambientNoise.buffer = noiseBuffer;
+                this.ambientNoise.loop = true;
+
+                const filter = this.ambientContext.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 400;
+
+                this.ambientNoise.connect(filter);
+                filter.connect(this.ambientGain);
+                this.ambientNoise.start();
+                break;
+
+            case 'volcanic': // Venus
+                // Rumbling volcanic sounds
+                this.ambientOscillator = this.ambientContext.createOscillator();
+                this.ambientOscillator.type = 'triangle';
+                this.ambientOscillator.frequency.value = 40;
+
+                const volcanicLFO = this.ambientContext.createOscillator();
+                volcanicLFO.frequency.value = 0.3;
+                const volcanicLFOGain = this.ambientContext.createGain();
+                volcanicLFOGain.gain.value = 15;
+                volcanicLFO.connect(volcanicLFOGain);
+                volcanicLFOGain.connect(this.ambientOscillator.frequency);
+
+                this.ambientOscillator.connect(this.ambientGain);
+                this.ambientOscillator.start();
+                volcanicLFO.start();
+                break;
+
+            case 'nature': // Earth
+                // Gentle nature ambience
+                this.ambientOscillator = this.ambientContext.createOscillator();
+                this.ambientOscillator.type = 'sine';
+                this.ambientOscillator.frequency.value = 200;
+
+                const natureLFO = this.ambientContext.createOscillator();
+                natureLFO.frequency.value = 2;
+                const natureLFOGain = this.ambientContext.createGain();
+                natureLFOGain.gain.value = 50;
+                natureLFO.connect(natureLFOGain);
+                natureLFOGain.connect(this.ambientOscillator.frequency);
+
+                const natureGain = this.ambientContext.createGain();
+                natureGain.gain.value = 0.1;
+
+                this.ambientOscillator.connect(natureGain);
+                natureGain.connect(this.ambientGain);
+                this.ambientOscillator.start();
+                natureLFO.start();
+                break;
+
+            default:
+                // Generic space ambience
+                this.ambientOscillator = this.ambientContext.createOscillator();
+                this.ambientOscillator.type = 'sine';
+                this.ambientOscillator.frequency.value = 100;
+                this.ambientOscillator.connect(this.ambientGain);
+                this.ambientOscillator.start();
+        }
+    }
+
+    stopAmbient() {
+        if (this.ambientOscillator) {
+            try {
+                this.ambientOscillator.stop();
+            } catch (e) {
+                // Already stopped
+            }
+            this.ambientOscillator = null;
+        }
+        if (this.ambientNoise) {
+            try {
+                this.ambientNoise.stop();
+            } catch (e) {
+                // Already stopped
+            }
+            this.ambientNoise = null;
+        }
+        if (this.ambientContext) {
+            this.ambientContext.close();
+            this.ambientContext = null;
+        }
+        this.ambientGain = null;
+    }
 }
 
 // Export singleton instance
