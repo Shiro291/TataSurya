@@ -14,6 +14,13 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
     const question = questions[currentQ];
     const userAnswer = answers[question.id];
 
+    // Initialize ordering answer if it doesn't exist
+    useEffect(() => {
+        if (question.type === 'ordering' && !userAnswer) {
+            setAnswers(prev => ({ ...prev, [question.id]: question.items }));
+        }
+    }, [question.id, question.type, question.items, userAnswer]);
+
     const checkAnswer = () => {
         let correct = false;
 
@@ -27,6 +34,9 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
             const wordCount = text.split(/\s+/).filter(w => w).length;
             const hasKeywords = question.keywords.some(kw => text.includes(kw.toLowerCase()));
             correct = wordCount >= question.minWords && hasKeywords;
+        } else if (question.type === 'ordering') {
+            // Compare arrays - items must be in exact same order
+            correct = JSON.stringify(userAnswer) === JSON.stringify(question.correct);
         }
 
         setIsCorrect(correct);
@@ -56,6 +66,8 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
                     const wordCount = text.split(/\s+/).filter(w => w).length;
                     const hasKeywords = q.keywords.some(kw => text.includes(kw.toLowerCase()));
                     correct = wordCount >= q.minWords && hasKeywords;
+                } else if (q.type === 'ordering') {
+                    correct = JSON.stringify(ans) === JSON.stringify(q.correct);
                 }
 
                 if (correct) totalScore++;
@@ -150,6 +162,76 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
                     }}>
                         {wordCount} / {question.minWords} kata minimum
                     </div>
+                </div>
+            );
+        } else if (question.type === 'ordering') {
+            const currentList = userAnswer || question.items;
+
+            const moveItem = (index, direction) => {
+                const newList = [...currentList];
+                const newIndex = index + direction;
+                if (newIndex >= 0 && newIndex < newList.length) {
+                    [newList[index], newList[newIndex]] = [newList[newIndex], newList[index]];
+                    setAnswers({ ...answers, [question.id]: newList });
+                }
+            };
+
+            return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '5px' }}>
+                        Gunakan panah untuk mengurutkan:
+                    </div>
+                    {currentList.map((item, i) => (
+                        <div
+                            key={item}
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                padding: '15px',
+                                background: 'rgba(255,255,255,0.05)',
+                                border: '1px solid rgba(255,255,255,0.1)',
+                                borderRadius: '12px'
+                            }}
+                        >
+                            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--accent)', minWidth: '30px' }}>
+                                {i + 1}
+                            </span>
+                            <span style={{ flex: 1, color: '#fff' }}>{item}</span>
+                            <div style={{ display: 'flex', gap: '5px' }}>
+                                <button
+                                    onClick={() => moveItem(i, -1)}
+                                    disabled={i === 0 || showFeedback}
+                                    style={{
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        background: 'rgba(255,255,255,0.1)',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        color: '#fff',
+                                        cursor: (i === 0 || showFeedback) ? 'not-allowed' : 'pointer',
+                                        opacity: (i === 0 || showFeedback) ? 0.3 : 1
+                                    }}
+                                >
+                                    ↑
+                                </button>
+                                <button
+                                    onClick={() => moveItem(i, 1)}
+                                    disabled={i === currentList.length - 1 || showFeedback}
+                                    style={{
+                                        padding: '5px 10px',
+                                        borderRadius: '5px',
+                                        background: 'rgba(255,255,255,0.1)',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        color: '#fff',
+                                        cursor: (i === currentList.length - 1 || showFeedback) ? 'not-allowed' : 'pointer',
+                                        opacity: (i === currentList.length - 1 || showFeedback) ? 0.3 : 1
+                                    }}
+                                >
+                                    ↓
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             );
         }
