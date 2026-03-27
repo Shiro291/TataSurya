@@ -1,16 +1,45 @@
-# React + Vite
+# 🚀 Angkasa Eksplorer: Petualangan Tata Surya
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Angkasa Eksplorer** adalah aplikasi edukasi interaktif yang dirancang khusus untuk siswa sekolah dasar (SD) untuk mempelajari keajaiban tata surya kita melalui pengalaman bermain sambil belajar yang imersif.
 
-Currently, two official plugins are available:
+## 🌟 Fitur Utama
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **🗺️ Peta Orbit Interaktif**: Jelajahi orbit kedelapan planet di tata surya dengan visualisasi yang menarik.
+- **🔍 Mode Eksplorasi**: Pelajari statistik vital (suhu, jarak, gravitasi) dan fakta unik setiap planet melalui panel detail yang komprehensif.
+- **🛡️ Misi Penyelamatan Bumi**: Alur cerita misi yang dibagi menjadi empat tahap:
+  1. **Eksplorasi**: Menjelajahi seluruh planet untuk mengumpulkan data dasar.
+  2. **Tantangan (Tantangan Perbandingan)**: Kuis interaktif yang menguji logika, matematika sederhana, dan kemampuan pengurutan.
+  3. **Laporan (Laporan Misi)**: Latihan menulis laporan ilmiah sederhana untuk melatih literasi.
+  4. **Sertifikat**: Dapatkan sertifikat digital resmi sebagai "Space Commander" setelah menyelesaikan misi.
+- **🖨️ Cetak Sertifikat**: Sertifikat yang dioptimalkan untuk dicetak dengan format bersih dan profesional.
 
-## React Compiler
+## 🕹️ Mode Pengembang (Cheat Mode)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Untuk keperluan demonstrasi atau pengujian, aplikasi dilengkapi dengan shortcut khusus:
+- **`Ctrl+G`**: Berfungsi di setiap tahap misi untuk melewati rintangan dengan hasil sempurna (Skor 100%, Laporan otomatis, dll).
 
-## Expanding the ESLint configuration
+## 🛠️ Teknologi yang Digunakan
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React**: Library utama untuk membangun antarmuka pengguna yang reaktif.
+- **Vite**: Toolkit pengembangan untuk build yang cepat dan performa optimal.
+- **Framer Motion**: Digunakan untuk animasi transisi dan efek visual yang halus.
+- **Vanilla CSS**: Desain UI kustom tanpa library CSS eksternal berat untuk kontrol penuh estetika.
+
+## 🚀 Memulai (Local Setup)
+
+1. **Clone repositori**:
+   ```bash
+   git clone https://github.com/Shiro291/TataSurya.git
+   ```
+2. **Instal dependensi**:
+   ```bash
+   npm install
+   ```
+3. **Jalankan server pengembangan**:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+*Selamat Menjelajahi Alam Semesta! 👨‍🚀🚀🌍*
