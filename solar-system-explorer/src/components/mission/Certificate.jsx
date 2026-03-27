@@ -94,6 +94,7 @@ const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) 
         <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
+            className="certificate-to-print"
             style={{
                 background: 'linear-gradient(135deg, rgba(11, 11, 42, 0.9), rgba(30, 30, 80, 0.9))',
                 backdropFilter: 'blur(20px)',
@@ -103,9 +104,66 @@ const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) 
                 maxWidth: isMobile ? '95%' : '700px',
                 margin: '0 auto',
                 textAlign: 'center',
-                boxShadow: '0 0 50px var(--primary)44'
+                boxShadow: '0 0 50px var(--primary)44',
+                position: 'relative'
             }}
         >
+            <style>
+                {`
+                @media print {
+                    /* Hide everything else */
+                    body * {
+                        visibility: hidden;
+                    }
+                    /* Show only the certificate */
+                    .certificate-to-print, .certificate-to-print * {
+                        visibility: visible;
+                    }
+                    .certificate-to-print {
+                        position: fixed !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        height: auto !important;
+                        margin: 0 !important;
+                        padding: 40px !important;
+                        background: white !important;
+                        color: black !important;
+                        border: 2px solid #00E5FF !important;
+                        border-radius: 20px !important;
+                        box-shadow: none !important;
+                        transform: none !important;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    /* Ensure text colors are readable on white background */
+                    .certificate-to-print h1, 
+                    .certificate-to-print h2, 
+                    .certificate-to-print h3 {
+                        color: #008ba3 !important; /* Darker cyan for text */
+                        background: none !important;
+                        -webkit-text-fill-color: initial !important;
+                    }
+                    .certificate-to-print strong {
+                        color: #1a1a1a !important;
+                    }
+                    .certificate-to-print p, 
+                    .certificate-to-print span,
+                    .certificate-to-print div {
+                        color: #333 !important;
+                    }
+                    /* Hide action buttons during print */
+                    .no-print {
+                        display: none !important;
+                    }
+                    /* Adjust stats for print */
+                    .stats-container div {
+                        background: #f5f5f5 !important;
+                        border: 1px solid #ddd !important;
+                    }
+                }
+                `}
+            </style>
             {/* Certificate Header */}
             <div style={{
                 borderBottom: '2px solid var(--primary)',
@@ -152,7 +210,7 @@ const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) 
             </p>
 
             {/* Stats */}
-            <div style={{
+            <div className="stats-container" style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(3, 1fr)',
                 gap: '20px',
@@ -199,7 +257,7 @@ const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) 
                     <h4 style={{ color: 'var(--accent)', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '10px', marginBottom: '15px' }}>
                         📊 Kompetensi yang Dikuasai:
                     </h4>
-                    <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
+                    <div className="stats-container" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
                         {Object.entries(mastery).map(([category, stats]) => {
                             const percent = Math.round((stats.correct / stats.total) * 100);
                             return (
@@ -246,7 +304,7 @@ const Certificate = ({ studentName, score, exploredCount, onRestart, mastery }) 
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
+            <div className="no-print" style={{ display: 'flex', gap: '10px', marginTop: '30px' }}>
                 <button
                     onClick={onRestart}
                     style={{
