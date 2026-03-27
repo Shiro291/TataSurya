@@ -11,8 +11,6 @@ const Mission = () => {
         setStage,
         setQuizScore,
         saveReportDraft,
-        setStudentName,
-        completeMission,
         resetMission
     } = useMissionProgress();
 

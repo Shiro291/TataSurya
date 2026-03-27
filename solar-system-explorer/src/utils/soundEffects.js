@@ -177,7 +177,7 @@ class SoundEffects {
         this.ambientGain.connect(this.ambientContext.destination);
 
         switch (type) {
-            case 'wind': // Mars, Uranus
+            case 'wind': { // Mars, Uranus
                 // Low frequency wind sound
                 this.ambientOscillator = this.ambientContext.createOscillator();
                 this.ambientOscillator.type = 'sawtooth';
@@ -194,8 +194,9 @@ class SoundEffects {
                 this.ambientOscillator.start();
                 windLFO.start();
                 break;
+            }
 
-            case 'hum': // Saturn, Sun
+            case 'hum': { // Saturn, Sun
                 // Deep mechanical hum
                 this.ambientOscillator = this.ambientContext.createOscillator();
                 this.ambientOscillator.type = 'sine';
@@ -210,8 +211,9 @@ class SoundEffects {
                 this.ambientOscillator.start();
                 osc2.start();
                 break;
+            }
 
-            case 'storm': // Jupiter, Neptune
+            case 'storm': { // Jupiter, Neptune
                 // Chaotic storm sounds using noise
                 const bufferSize = this.ambientContext.sampleRate * 2;
                 const noiseBuffer = this.ambientContext.createBuffer(1, bufferSize, this.ambientContext.sampleRate);
@@ -232,8 +234,9 @@ class SoundEffects {
                 filter.connect(this.ambientGain);
                 this.ambientNoise.start();
                 break;
+            }
 
-            case 'volcanic': // Venus
+            case 'volcanic': { // Venus
                 // Rumbling volcanic sounds
                 this.ambientOscillator = this.ambientContext.createOscillator();
                 this.ambientOscillator.type = 'triangle';
@@ -250,8 +253,9 @@ class SoundEffects {
                 this.ambientOscillator.start();
                 volcanicLFO.start();
                 break;
+            }
 
-            case 'nature': // Earth
+            case 'nature': { // Earth
                 // Gentle nature ambience
                 this.ambientOscillator = this.ambientContext.createOscillator();
                 this.ambientOscillator.type = 'sine';
@@ -272,6 +276,7 @@ class SoundEffects {
                 this.ambientOscillator.start();
                 natureLFO.start();
                 break;
+            }
 
             default:
                 // Generic space ambience

@@ -6,7 +6,7 @@ const MissionReport = ({ initialDraft = '', onSubmit }) => {
     const isMobile = useIsMobile();
     const [report, setReport] = useState(initialDraft);
     const wordCount = report.split(/\s+/).filter(w => w).length;
-    const minWords = 200;
+    const minWords = 50;
     const canSubmit = wordCount >= minWords;
 
     // Auto-save every 3 seconds
