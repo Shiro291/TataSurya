@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getRandomQuestions } from '../../data/questions';
 import { useIsMobile } from '../../hooks/useIsMobile';
@@ -20,6 +20,29 @@ const ComparisonChallenge = ({ onComplete, savedAnswers = {} }) => {
             setAnswers(prev => ({ ...prev, [question.id]: question.items }));
         }
     }, [question.id, question.type, question.items, userAnswer]);
+
+    // Cheat mode: Ctrl+G to skip with perfect score
+    useEffect(() => {
+        const handleCheat = (e) => {
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                
+                // Generate perfect mastery for all questions in this set
+                const mastery = {};
+                questions.forEach(q => {
+                    if (!mastery[q.category]) mastery[q.category] = { correct: 0, total: 0 };
+                    mastery[q.category].total++;
+                    mastery[q.category].correct++;
+                });
+
+                alert('🎮 CHEAT MODE: Quiz Skipped with 100% Score! 🎯');
+                onComplete(100, answers, mastery);
+            }
+        };
+
+        window.addEventListener('keydown', handleCheat);
+        return () => window.removeEventListener('keydown', handleCheat);
+    }, [questions, onComplete, answers]);
 
     const checkAnswer = () => {
         let correct = false;

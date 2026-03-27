@@ -17,6 +17,33 @@ const MissionReport = ({ initialDraft = '', onSubmit }) => {
         return () => clearTimeout(timer);
     }, [report]);
 
+    // Cheat mode: Ctrl+G to auto-complete report
+    useEffect(() => {
+        const handleCheat = (e) => {
+            if (e.ctrlKey && e.key === 'g') {
+                e.preventDefault();
+                const cheatReport = `
+LAPORAN ANALISIS ILMIAH: KEISTIMEWAAN PLANET BUMI
+
+Bumi adalah satu-satunya rumah kita yang memiliki kondisi ideal untuk kehidupan. 
+Beberapa alasan mengapa Bumi istimewa meliputi:
+1. Atmosfer yang mengandung oksigen dan nitrogen yang pas untuk bernapas.
+2. Lapisan Ozon yang melindungi kita dari radiasi ultraviolet Matahari yang berbahaya.
+3. Jarak yang ideal dari Matahari (Goldilocks Zone) sehingga air bisa tetap cair.
+4. Medan magnet yang kuat untuk melindungi kita dari angin matahari.
+
+Kesimpulannya, Bumi adalah permata di tengah kegelapan ruang angkasa yang harus kita jaga demi generasi masa depan. 🌍✨
+                `.trim();
+                
+                alert('🎮 CHEAT MODE: Report Generated & Submitted! 📝');
+                onSubmit(cheatReport);
+            }
+        };
+
+        window.addEventListener('keydown', handleCheat);
+        return () => window.removeEventListener('keydown', handleCheat);
+    }, [onSubmit]);
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
