@@ -12,7 +12,7 @@ import PlanetFun from './planet-details/PlanetFun';
 const PlanetDetailPanel = ({ planet, onClose }) => {
     const isMobile = useIsMobile();
     const [activeTab, setActiveTab] = useState('overview'); // overview, stats, scan, fun
-    const details = planetDetails[planet.name] || planetDetails['Earth']; // Fallback
+    const details = planetDetails[planet.englishName] || planetDetails['Earth']; // Fallback
 
     // Reset tab when planet changes
     useEffect(() => {
